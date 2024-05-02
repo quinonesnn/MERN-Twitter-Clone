@@ -20,4 +20,9 @@ File to document the journey and steps it took to make this application:
     Express server
     in the backend folder, to make clean code, create 3 folders: routes, models, controllers
     start with auth. in routes folder create auth.routes.js file
-    test with a get for a signup endpoint
+    create post for signup login and logout
+    Create MongoDB deployment and cluster and save password to a .env file
+        Connect with Drivers
+        Make a MONGO_URI variable and set it to the connection string (you can name the db by putting the name before the ?)
+        Use dotenv to connect MongoDB
+            Create db folder in backend and add a connectMongoDB.js
