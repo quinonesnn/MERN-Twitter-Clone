@@ -1,0 +1,23 @@
+File to document the journey and steps it took to make this application:
+
+1. Create Front and Backend Folders
+    a. initialize frontend folder with 'npm create vite@latest'
+        select React and plain JavaScript
+        'npm install'
+        'npm run dev' to start development
+    b. initialize backend
+        in the root type 'npm init -y'
+        install dependencies 'npm install express moongoose jsonwebtoken bcryptjs dotenv cors cookie-parser cloudinary'
+        install dev dependencies 'npm i -D nodemon'
+        add "type": "module", to package.json under author
+        add a server.js to the backend folder
+        Replace "test": "echo \"Error: no test specified\" && exit 1" from scripts with "dev": "nodemon backend/server.js"
+        Add "start": "node backend/server.js" to scripts with
+        Replace "main":"index.js" to "backend/server.js"
+        Test server.js by adding console.log("server is running"); and enter npm run dev
+
+2. Start Backend
+    Express server
+    in the backend folder, to make clean code, create 3 folders: routes, models, controllers
+    start with auth. in routes folder create auth.routes.js file
+    test with a get for a signup endpoint
