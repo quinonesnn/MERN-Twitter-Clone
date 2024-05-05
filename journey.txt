@@ -26,3 +26,59 @@ File to document the journey and steps it took to make this application:
         Make a MONGO_URI variable and set it to the connection string (you can name the db by putting the name before the ?)
         Use dotenv to connect MongoDB
             Create db folder in backend and add a connectMongoDB.js
+            Create connectMongoDB function using the env variable
+            Add fucntion to the app.listen to connect to MongoDB
+    Create models
+        Create User Schema with new.mongoose.Schema
+    
+    Signup 
+        Requirements:
+            try catch
+            email regex validation
+            confirm if email, and username are already taken 
+            check password length
+            Hash password using bcryptjs
+            create new user object
+            Create generateTokenAndSetCookie function in backend/lib/util to be used in signup
+                generate the token using jwt from jsonwebtoken
+                open up bash terminal and genrate a random value using 'openssl rand -base64 32'
+                add JWT_SECRET to the env file and set the value to 
+                create res.cookie with maxAge, httpOnly, sameSite, and secure
+                secure is for prodcution. Add a NODE_ENV variable to .env file and set it to development environment
+
+        Process:
+            1. User sends signup request to our server
+            2. A token is created from the request that is encoded with with a secrect key (JWT_SECRET) that was assigned in the .env file
+            3. The created token will have a payload (userId), the token will be sent in the cookie back to the client
+            4. Now when the user has the token and sends the request, it will send the jwt token in the request
+            5. The server will get that token, decode it and validate it, it will confirm the userId
+                Successful: if it validates
+                Error: if it can't validate the jwt token
+        
+        Test:
+            add app.use(express.urlencoded({extended: true}))
+            create new workspace in Postman for project
+            add 3 collections: AUTH
+            in AUTH name the function, since its SIGNUP it will be POST
+            Use x-www-form-urlencode
+    
+    Login
+        Find username in DB
+        compare password given to the one in DB using bcrypt.compare
+            When comaring bcrypt.compare(password, user?.password || "")
+            user? if user is undefined, then at least compate it with an empty string that will result in False
+        Generate token and set the users cookie
+
+    Logout
+        simply set delete the jwt token on browser
+
+    authCheck
+        add and ensure that this route is protected in auth.routes
+        add a middleware folder to backend make file backend/middleware/protectRoute.js
+            Purpose: Looks at the token and makes sure they are valid and authorized
+            this function has a 'next' meaning that there is another function that is called after
+            this protectRoute function also needs a library called cookieParser, add it to server.js, this allows us to get access to the cookieParser
+            
+
+
+
