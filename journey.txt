@@ -16,68 +16,134 @@ File to document the journey and steps it took to make this application:
         Replace "main":"index.js" to "backend/server.js"
         Test server.js by adding console.log("server is running"); and enter npm run dev
 
-2. Start Backend
-    Express server
-    in the backend folder, to make clean code, create 3 folders: routes, models, controllers
-    start with auth. in routes folder create auth.routes.js file
-    create post for signup login and logout
-    Create MongoDB deployment and cluster and save password to a .env file
+2. Backend
+    1. Create MongoDB deployment and cluster
+        save password to a .env file
         Connect with Drivers
         Make a MONGO_URI variable and set it to the connection string (you can name the db by putting the name before the ?)
         Use dotenv to connect MongoDB
             Create db folder in backend and add a connectMongoDB.js
             Create connectMongoDB function using the env variable
             Add fucntion to the app.listen to connect to MongoDB
-    Create models
+
+    in the backend folder, to make clean code, create 3 folders: routes, models, controllers
+
+    2. Create Models
+        backend/models/user.model.js
         Create User Schema with new.mongoose.Schema
-    
-    Signup 
-        Requirements:
-            try catch
-            email regex validation
-            confirm if email, and username are already taken 
-            check password length
+
+    3. Create Auth Routes
+        backend/routes/auth.routes.js
+        Add routes for auth controllers (/signup, /login, /logout, /authcheck)
+        /authcheck will use a middleware called protectRoute that validates the token of the user
+        - Create middleware
+            backend/middleware/protectRoute.js
+            This function has the 'next' param meaning that there will be another function called after
+            This function uses cookieParser library, add and use it in server.js
+        
+
+    4. Create Auth Controllers
+        backend/controllers/auth.controller.js
+
+        
+        authCheck
+            add and ensure that this route is protected in auth.routes
+
+        
+        Signup 
+            Email regex validation to ensure email format
+            Confirm if email, and username are already taken 
+            Check password length
             Hash password using bcryptjs
-            create new user object
+            Create new user object
             Create generateTokenAndSetCookie function in backend/lib/util to be used in signup
-                generate the token using jwt from jsonwebtoken
-                open up bash terminal and genrate a random value using 'openssl rand -base64 32'
-                add JWT_SECRET to the env file and set the value to 
+                Generate the token using jwt from jsonwebtoken
+                Open bash terminal and genrate a random value using 'openssl rand -base64 32'
+                Make a JWT_SECRET variable in the .env file and set it to the output of the previous command
                 create res.cookie with maxAge, httpOnly, sameSite, and secure
                 secure is for prodcution. Add a NODE_ENV variable to .env file and set it to development environment
 
-        Process:
-            1. User sends signup request to our server
-            2. A token is created from the request that is encoded with with a secrect key (JWT_SECRET) that was assigned in the .env file
-            3. The created token will have a payload (userId), the token will be sent in the cookie back to the client
-            4. Now when the user has the token and sends the request, it will send the jwt token in the request
-            5. The server will get that token, decode it and validate it, it will confirm the userId
-                Successful: if it validates
-                Error: if it can't validate the jwt token
+            Process:
+                1. User sends signup request to our server
+                2. A token is created from the request that is encoded with with a secrect key (JWT_SECRET) that was assigned in the .env file
+                3. The created token will have a payload (userId), the token will be sent in the cookie back to the client
+                4. Now when the user has the token and sends the request, it will send the jwt token in the request
+                5. The server will get that token, decode it and validate it, it will confirm the userId
+                    Successful: if it validates
+                    Error: if it can't validate the jwt token
+            
+            Test:
+                add app.use(express.urlencoded({extended: true}))
+                create new workspace in Postman for project
+                add 3 collections: AUTH
+                in AUTH name the function, since its SIGNUP it will be POST
+                Use x-www-form-urlencode
         
-        Test:
-            add app.use(express.urlencoded({extended: true}))
-            create new workspace in Postman for project
-            add 3 collections: AUTH
-            in AUTH name the function, since its SIGNUP it will be POST
-            Use x-www-form-urlencode
+        Login
+            Find username in DB
+            compare password given to the one in DB using bcrypt.compare
+                When comaring bcrypt.compare(password, user?.password || "")
+                user? if user is undefined, then at least compate it with an empty string that will result in False
+            Generate token and set the users cookie
+
+        Logout
+            simply set delete the jwt token on browser
+
+    5. Create User Routes
+        backend/routes/user.routes.js
+        Add routes for user controllers (/profile/:username, /suggested, /follow, /update)
+        All of these routes will be using protectRoute middleware because these will be things only a logged in user can do 
     
-    Login
-        Find username in DB
-        compare password given to the one in DB using bcrypt.compare
-            When comaring bcrypt.compare(password, user?.password || "")
-            user? if user is undefined, then at least compate it with an empty string that will result in False
-        Generate token and set the users cookie
+    6. Create Notificaiton Model
+        backend/models/notification.model.js
+        
+    
+    7. Create User Controllers
+        backend/controllers/user.controller.js
 
-    Logout
-        simply set delete the jwt token on browser
+        getUserProfile
+            Get a user profile that is grabbed from the req.params (/profile/:username where username is the param)
+            return as a json
+        
+        folloUnfollowUser
+            Get a user id from req.params (/follow/:id where id is the param)
+            set the selectedUser to the user's id
+            set currentUser by id given from protectRoute
+            ensure user isn't attempting to follow/unfollow themselves
+            ensure users exist
 
-    authCheck
-        add and ensure that this route is protected in auth.routes
-        add a middleware folder to backend make file backend/middleware/protectRoute.js
-            Purpose: Looks at the token and makes sure they are valid and authorized
-            this function has a 'next' meaning that there is another function that is called after
-            this protectRoute function also needs a library called cookieParser, add it to server.js, this allows us to get access to the cookieParser
+            set a check if the user is already following the selected user
+            If following:     remove the currentUser out of the list of selectedUser's own followers
+                              remove selectedUser from the users list of currentUser's following
+            If not following: add selectedUser to list of currentUser's followers
+                              add currentUser to selectedUser's following
+            
+            send notificaiton for follow
+        
+        getSuggestedUsers
+            get a list of users that you are alreayd following
+            make a sample size of 10 users that are in the db
+            filter the users to only include ones that you arent following
+            only show the first 4
+            dont show their passwords
+            return list of 4 users that you do not follow but are in the db
+
+        updateUser
+            ability to change fullName, email, password, coverimg, and profrleimg
+
+            Need to check currentPassowrd and newPassword
+                ensure both values are filled and not just one
+                bcrypt.compare the currenPassword and the newPassword
+                Check length
+                salt, rehash, and change new password
+            
+            coverImg and profileImg
+                Both are being store using cloudinart API, ensure to add name, api key and secret to .env and config them in server.js
+                destroy the image if it already exist in user to avoid taking up to much space
+
+            
+        
+
             
 
 
