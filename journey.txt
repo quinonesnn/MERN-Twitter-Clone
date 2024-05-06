@@ -141,8 +141,57 @@ File to document the journey and steps it took to make this application:
                 Both are being store using cloudinart API, ensure to add name, api key and secret to .env and config them in server.js
                 destroy the image if it already exist in user to avoid taking up to much space
 
-            
+    5. Create Post Routes
+        backend/routes/post.routes.js
+        Add routes for post controllers (/create, /like, /comment, /)
+        All of these routes will be using protectRoute middleware because these will be things only a logged in user can do 
+    
+    6. Create Post Model
+        backend/models/post.model.js
         
+    7. Create Post Controllers
+        backend/controllers/post.controller.js
+
+        createPost
+            take in text or img, check if they are provided
+            check if user exists and is auth
+            if img is provided upload it to cloudinary
+
+        deletePost
+            find post by id
+            Check if you are owner of post
+            if img was in post, delte it from cloudinary
+
+        likePost
+            find post by id
+            check if user already liked the post
+            if liked:
+                remove like from post and remove like from user's likePost
+            if not like:
+                add like to posts.likes and add like to users
+        
+        commentOnPost
+            get and make sure their is text
+            get the post id and user that is commenting 
+            check if post exists
+            push comment to post.comments
+
+        getLikedPosts
+            get userId
+            find posts that user has liked, populate the user without the password and with the comments, without the password
+        
+        getFeed
+            get userId
+            get a list of the users following
+            get posts ordered from recently created
+
+        getAllPost
+            get all post recently created and their user without the password
+
+        getUserPosts
+            get all post from a specifc username
+
+
 
             
 

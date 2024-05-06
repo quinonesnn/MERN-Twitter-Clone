@@ -25,14 +25,14 @@ const userSchema = new Schema({
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            defaul: []
+            default: []
         }
     ],
     following: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
-            defaul: []
+            default: []
         }
     ],
     profileImg: {
