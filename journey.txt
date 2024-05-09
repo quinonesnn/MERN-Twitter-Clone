@@ -305,7 +305,107 @@ File to document the journey and steps it took to make this application:
             
             Post
                 useState on comment, setComment
-                
+
+4. Connecting Api to frontend
+    TanStack Query (react-query)
+    https://tanstack.com/query/latest/docs/framework/react/installation
+
+    'npm run dev' on two seperate terminals, one inside the root for the backend and one in the frontend
+
+    in frontend install tanstack 'npm i @tanstack/react-query'
+
+    Initialize QueryClient in main.jsx
+    Wrap App
+        <QueryClientProvider client={queryClient}>
+            <App />
+        </QueryClientProvider>
+
+    Add Proxy
+        in the vite.config.js add
+        proxy: {
+            '/api': {
+                target: 'http://localhost:5000',
+                changeOrigin: true
+            }
+        }
+        This configuration proxies any request that starts with /api and this in target URL in front http://localhost:5000
+        changeOrigin is necessary to ensure cookies and other request headers are sent correctly when the target URL has a different domain or port
+        By changing the Origin header, changeOrigin: true allows your frontend and backend to communicate smoothly during development,
+        even though they're running on different servers. This simplifies development workflow by allowing you to make API calls from your frontend
+        code without needing to modify URLs or handle CORS (Cross-Origin Resource Sharing) concerns.
+
+        maintains a separation between your frontend and backend development environments. Changes you make to one won't directly affect the other,
+        promoting modularity and testability.
+
+    react-hot-toast
+        This is a library we are going to use to throw errors or add toasts
+        https://react-hot-toast.com/docs
+        in the front end npm install react-hot-toast
+        add <Toaster /> to App.jsx
+
+    SignUpPage
+        import { useMutation, useQuery } from '@tanstack/react-query';
+        useMutation is to change data
+        useQuery is to pull data
+
+        Remove the hardcoded isError
+
+        const { mutate, isError, isPending, error } = useMutation();
+        (you can name the mutate function the action that its preforming mutate:signUpUser for readable code)
+            mutatationFn modifies the mutate()
+                fetch("/api/auth/signup")
+                we clarify its a post and the headers and stringify the JSON res
+                handle res and data error
+                return data
+                if catch error, throw a toast
+                Put the mutate(formData) in the handleSubmit fn
+            isError was replaced by the hardcoded one
+            isPending is places in the signup btn
+                {isPending ? "Signing up..." : "Sign up"}
+
+    Login
+        identical to SignUpPage, just takes in username and password
+
+    Logout/ Sidebar.jsx
+        same as signup without the headers
+        add OnClick() to logout icon (BiLogOut)
+
+    Protect Routes
+        The next step is needed to protect the routes from users that are not logged in
+        in auth.routes.js I created a function called authCheck to ensure they are logged in
+        in App.jsx we will need to use tanstack's  useQuery to pull data
+        we set quertKey: ["authUser"] so that this fn can be used throughout our app
+        we set queryFn to fetch("/api/auth/authCheck")
+
+        in each route that can only be accessed by a signed in user:
+            element={authUser ? <HomePage /> : <Navigate to='/login'></Navigate>
+            ensure user is authenticated if not go to LoginPage
+            if user is already authenticated then just take them to home page
+
+        in the main.jsx file we want to check the QueryClient's refetchOnWindowsFocus to False
+        This makes it so that when you switch through tabs it doesn't refetch
+
+    LoginPage
+        OnSuccess we need to be able to refetch the user and invalidate queries
+        we use useQueryClient from tanstack and initialize it
+        queryClient.invalidateQueries({ queryKey: ["authUser"]});
+    
+    Logout/ Sidebar
+        OnSuccess Invalidate the query
+        delete the hardcoded data
+        We also want to set the Sidebars data to whover is logged in
+        we use useQuery({queryKey: ["authUser"]}) to get the auth user, set the value to data and rename it authUser
+        change the hardcoded data to authUser for readable code
+    
+    Only show sidebar and righpanel if user is in
+      {authUser && <Sidebar />}
+      {authUser && <RightPanel />}
+    
+
+
+        
+
+
 
 
     
