@@ -400,7 +400,16 @@ File to document the journey and steps it took to make this application:
     Only show sidebar and righpanel if user is in
       {authUser && <Sidebar />}
       {authUser && <RightPanel />}
-    
+
+
+    Posts.jsx
+        We now want to useQuery to pull the posts
+        Create a switch that chooses the endpoint according to the feed that is selected
+        we create a new queryKey called "posts"
+        delete the dummy data
+        we then want to add the feedType to the post in HomePage.jsx
+        we have to also call the refetch, isRefetching in useQuery
+        We use a useEffect() hook to trigger a refetch of data whenever the feedType prop changes
 
 
         
