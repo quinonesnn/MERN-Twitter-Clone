@@ -411,7 +411,12 @@ File to document the journey and steps it took to make this application:
         we have to also call the refetch, isRefetching in useQuery
         We use a useEffect() hook to trigger a refetch of data whenever the feedType prop changes
 
-
+    Post.jsx
+        add the authUser to Posts.jsx
+        ensuer that isMyPost is set to the authUsers id
+        useMutation for postdeletion
+        use isPending to display loading spinner under FaTrash icon
+        Add queryClient and onSuccess invalidate query on posts
         
 
 
