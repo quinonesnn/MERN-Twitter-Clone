@@ -191,6 +191,132 @@ File to document the journey and steps it took to make this application:
         getUserPosts
             get all post from a specifc username
 
+3. Frontend
+    Install Tailwind CSS with Vite
+    https://tailwindcss.com/docs/guides/vite#react
+        npm install -D tailwindcss postcss autoprefixer
+        npx tailwindcss init -p
+
+    Install daisyUI
+    https://daisyui.com/docs/install/
+
+    in the .eslintrc.cjs file
+        add 'react/prop-types': 'off'
+        We will initially use boilerplate code for some components
+
+    Install react router and icons:
+    npm install react-router-dom react-icons
+
+    Wrap BrowserRouter around App in main.jsx:
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+
+    Add Routes and Route from react-router-dom to App.jsx:
+    <div className="flex max-w-6xl mx-auto">
+      <Routes>
+        <Route path='/' element={<HomePage />}/>
+        <Route path='/login' element={<LoginPage />}/>
+        <Route path='/signup' element={<SignUpPage />}/>
+      </Routes>
+    </div>
+
+    Create folders and pages as jsx files: 
+        frontend/src/pages/auth/signup/SignUpPage.jsx
+        frontend/src/pages/auth/login/LoginPage.jsx
+        frontend/src/pages/home/HomePage.jsx
+    Import them into App.jsx
+
+    Use ES7+ React/Redux/React-Native Snippets to auto complete pages
+    typing in rafce auto completes to: 
+        import React from 'react'
+        const SignUpPage = () => {
+        return (
+            <div>SignUpPage</div>
+        )
+        }
+        export default SignUpPage
+
+    Add svg file that will be used in SignUpPage
+    frontend/src/components/svgs/X.jsx
+
+    SignUpPage
+        using https://react-icons.github.io/react-icons/
+        import MdOutlineMail, FaUser, MdPassword, MdDriveFileRenameOutline
+
+        Handle form data by using useState. Ensure that the inputs "name" tag is set to its corresponding name below:
+            const [formData, setFormData] = useState({
+                email: "",
+                username: "",
+                password: "",
+                fullName: "",
+            });
+        
+        Ensure inputs have "onChange" set to the following function to assign it properly
+            handleInputChange = (event) => {
+                setFormData({
+                    ...formData,
+                    [event.target.name]: event.target.value,
+                });
+            };
+
+    LoginPage
+        Same concepts as SignUpPage
+        Just take in username and password
+    
+    HomePage
+        Home page has some common components, components that are used throught the app
+        frontend/src/components/common/Sidebar.jsx
+        frontend/src/components/common/Posts.jsx
+        frontend/src/components/common/RightPanel.jsx
+        Common Components are not wrapped with Routes in App.jsx
+
+        Sidebar
+            Common Component
+            handles Home Notifications Profile and account Links
+            data is hardcoded for now but we will connect the user as the Auth user
+
+        dummy data
+            Since the backend isnt connected I created a src/utils/db/dummy.js
+            this holds fake Post data that will be incorporated int he Posts.jsx
+
+        RightPanel
+            Handels the suggested users
+            Uses RightPanelSkeleton to handle loading effect
+            frontend/src/components/skeletons/RightPanelSkeleton.jsx
+        
+        CreatePost
+            frontend/src/pages/home/CreatePost.jsx
+            Handles the Create Post feature that allows the user to make a post on the website
+            Posts can handle text and img, has a useState for both
+            handleSubmit function that shows an alert
+            handleImgChange read the uploaded image file and sets the img stat to its data url
+            User profile image with placeholder if unavailable
+            form with onSubmit={handleSubmit}
+            textArea that holds the value={text}, onChange={(e)=>setText(e.target.value)}
+        
+        Posts (diffrent from Post)
+            fronted/src/common/Posts.jsx
+            Handles the structure of each Post and its skeleton
+
+            PostSkeleton
+                frontend/src/components/skeletons/PostSkeleton.jsx
+                Handles the loading of the posts
+            
+            Post
+                useState on comment, setComment
+                
+
+
+    
+
+    
+
+
+
+
+
+
 
 
             
