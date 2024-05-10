@@ -430,6 +430,23 @@ File to document the journey and steps it took to make this application:
             this needs to be added to prevent DoS (Denial of Service) attack
                 Where an attacker would send a large file with the purpose of making it crash
 
+    RightPanel for Suggest users
+        useQuery to fetch suggested users
+        replace data with the suggested users
+    
+    Follow Unfollow functionality
+        Create a hooks folder in the frontend/src
+        useFollow
+            useMutation and useQueryClient
+            mutation follows on userId
+            onSuccess
+                invalidateQueries on suggested users to remove them from suggested users now that theyre followed
+                invalidateQueries on authUser to update follow count
+                wrap them in a Promise.all function to ensure that they succeed
+            return follow, isPending
+
+        add useFollow hook in RightPanel
+
     
 
 
