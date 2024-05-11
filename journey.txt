@@ -471,7 +471,9 @@ File to document the journey and steps it took to make this application:
         another function that will be used later to formatMemberSinceDate
             Gets month and year and returns a Joined month year
 
-
+    NotificationPage
+        create query on notification
+        create mutation for delete
 
 
     
