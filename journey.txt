@@ -475,6 +475,18 @@ File to document the journey and steps it took to make this application:
         create query on notification
         create mutation for delete
 
+    Profile page
+        remove hardcoded data
+        get username from useParams
+        create query on user with refetch
+        fetch profile/username
+        handle useEffect on username change to refetch
+        handle isRefetching to show skeleton when loading between profile pages 
+        handle memberSince function for bio
+        fetch users posts and their likes
+            in Posts.jsx we have a switch case on getPostEndpoint
+            add another for username that will be passed as a prop in ProfilePage.jsx
+            add another for likes and remember that likes takes an id (defined in post.routes.ts)
 
     
 
