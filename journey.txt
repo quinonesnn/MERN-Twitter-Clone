@@ -447,8 +447,17 @@ File to document the journey and steps it took to make this application:
 
         add useFollow hook in RightPanel
 
+    Like functionality
+        mutate likePost on postId
+        onSuccess we are not going to want to invalidate the query to update
+        this is because onSuccess it will refetch all the posts again and reload
+        instead I updated the cahce directly for that post
+            change the backend on post.controller.js
+                right now if we unlike a post it just deletes the id of the current user from post
+                we need to just delete the userId from the array and return updated likes
+            we use queryClient.setQueryData on posts, get the oldData, find the post that was selected then just update its likes
     
-
+    
 
 
 
