@@ -457,8 +457,19 @@ File to document the journey and steps it took to make this application:
                 we need to just delete the userId from the array and return updated likes
             we use queryClient.setQueryData on posts, get the oldData, find the post that was selected then just update its likes
     
-    
+    comment functionality
+        mutate commentPost on postId 
+        handle comment state one posted
+        invalidate queries (can be setQueryData, post.controllers needs to be updated)
 
+    Formatted date
+        Create frontend/src/utils/functions/date.js
+        create fucntion to formatPostDate
+            get the createdAt variable from the Post and the current date
+            get the time difference in seconds, minutes, hours, and days
+        
+        another function that will be used later to formatMemberSinceDate
+            Gets month and year and returns a Joined month year
 
 
 
