@@ -500,8 +500,17 @@ File to document the journey and steps it took to make this application:
 
             we make EditProfileModal useEffect to have the already entered values in the form
             give it the same update profile mutation 
+
+            Realized that the same function is being used in the same wiht profilePage and editProfileModal
+
+            create useUpdateUserProfile() hook in src/hooks
+                instead of using mutate we want to use mutateAsync so that it can give us values from what we pass in
+                inside the hook I pass the form data through the mutationFn 
+
+                use the async function when updating coverImg and profileImg
+
         
-        
+
 
     
 

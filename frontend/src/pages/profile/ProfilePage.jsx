@@ -4,15 +4,17 @@ import { Link, useParams } from "react-router-dom";
 import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
+
 import { formatMemberSinceDate } from "../../utils/functions/date";
 import useFollow from "../../hooks/useFollow";
+import useUpdateUserProfile from "../../hooks/useUpdateUserProfile";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 
 const ProfilePage = () => {
@@ -26,8 +28,6 @@ const ProfilePage = () => {
 	const {username} = useParams();
 
 	const { follow, isPending } = useFollow();
-
-	const queryClient = useQueryClient();
 
 	const {data:authUser} = useQuery({queryKey: ["authUser"]})
 
@@ -45,46 +45,11 @@ const ProfilePage = () => {
 		},
 	})
 
-	const {mutate: updateProfile, isPending: updatingProfile} = useMutation({
-		mutationFn: async () => {
-			try {
-				const res = await fetch(`/api/user/update`, {
-					method: "POST",
-					headers:{
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({
-						coverImg,
-						profileImg
-					}),
-				})
-				const data = await res.json();
-				if (!res.ok) throw new Error(data.error || "Something went wrong");
-				return data;
-			} catch (error) {
-				throw new Error(error);
-			}
-		},
-		onSuccess: () => {
-			//invalidate two queries to update profile and the sidebar
-			Promise.all([
-				queryClient.invalidateQueries(["userProfile"]),
-				queryClient.invalidateQueries(["authUser"]),
-			])
-		},
-		onError: () => {
-			toast.error("Failed to update profile");
-		}
-	})
+	const { updateProfile, updatingProfile } = useUpdateUserProfile();
 
 	const isMyProfile = authUser._id === user?._id;
 	const memberSince = formatMemberSinceDate(user?.createdAt);
 	const isFollowing = authUser?.following.includes(user?._id);
-	
-	useEffect(() => {
-		refetch()
-	}, [username, refetch])
-
 
 	const handleImgChange = (e, state) => {
 		const file = e.target.files[0];
@@ -98,10 +63,14 @@ const ProfilePage = () => {
 		}
 	};
 
+	useEffect(() => {
+		refetch()
+	}, [username, refetch])
+
 	return (
 		<>
 			<div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
-				{/* HEADER */}
+			{/* HEADER */}
 				{(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
 				{!isLoading && !user && <p className='text-center text-lg mt-4'>User not found</p>}
 				<div className='flex flex-col'>
@@ -113,13 +82,13 @@ const ProfilePage = () => {
 								</Link>
 								<div className='flex flex-col'>
 									<p className='font-bold text-lg'>{user?.fullName}</p>
-									<span className='text-sm text-slate-500'>2 posts</span>
+									<span className='text-sm text-slate-500'>posts</span>
 								</div>
 							</div>
-							{/* COVER IMG */}
+			{/* COVER IMG */}
 							<div className='relative group/cover'>
 								<img
-									src={coverImg || user?.coverImg || "/cover.png"}
+									src={coverImg || user?.coverImg || "../public/cover/cover.png"}
 									className='h-52 w-full object-cover'
 									alt='cover image'
 								/>
@@ -144,10 +113,10 @@ const ProfilePage = () => {
 									ref={profileImgRef}
 									onChange={(e) => handleImgChange(e, "profileImg")}
 								/>
-								{/* USER AVATAR */}
+			{/* USER AVATAR */}
 								<div className='avatar absolute -bottom-16 left-4'>
 									<div className='w-32 rounded-full relative group/avatar'>
-										<img src={profileImg || user?.profileImg || "/avatar-placeholder.png"} />
+										<img src={profileImg || user?.profileImg || "../public/avatar-placeholder.png"} />
 										<div className='absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer'>
 											{isMyProfile && (
 												<MdEdit
@@ -174,7 +143,11 @@ const ProfilePage = () => {
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => updateProfile()}
+										onClick={async () => {
+											await updateProfile({ coverImg, profileImg });
+											setCoverImg(null);
+											setProfileImg(null);
+										}}
 									>
 										{updatingProfile ? "Updating..." : "Update"}
 									</button>
@@ -194,12 +167,12 @@ const ProfilePage = () => {
 											<>
 												<FaLink className='w-3 h-3 text-slate-500' />
 												<a
-													href='https://quinonesnn.github.io/index.html'
+													href={user?.link}
 													target='_blank'
 													rel='noreferrer'
 													className='text-sm text-blue-500 hover:underline'
 												>
-                                                    https://quinonesnn.github.io/index.html
+                                                    {user?.link}
 												</a>
 											</>
 										</div>
