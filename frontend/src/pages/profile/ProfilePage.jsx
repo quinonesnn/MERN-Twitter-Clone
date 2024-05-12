@@ -5,15 +5,15 @@ import Posts from "../../components/common/Posts";
 import ProfileHeaderSkeleton from "../../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "./EditProfileModal";
 import { formatMemberSinceDate } from "../../utils/functions/date";
-
-import { POSTS } from "../../utils/db/dummy";
+import useFollow from "../../hooks/useFollow";
 
 import { FaArrowLeft } from "react-icons/fa6";
 import { IoCalendarOutline } from "react-icons/io5";
 import { FaLink } from "react-icons/fa";
 import { MdEdit } from "react-icons/md";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 
 const ProfilePage = () => {
 	const [coverImg, setCoverImg] = useState(null);
@@ -25,7 +25,11 @@ const ProfilePage = () => {
 
 	const {username} = useParams();
 
-	const isMyProfile = true;
+	const { follow, isPending } = useFollow();
+
+	const queryClient = useQueryClient();
+
+	const {data:authUser} = useQuery({queryKey: ["authUser"]})
 
 	const {data:user, isLoading, refetch, isRefetching} = useQuery({
 		queryKey: ["userProfile"],
@@ -41,8 +45,41 @@ const ProfilePage = () => {
 		},
 	})
 
-	const memberSince = formatMemberSinceDate(user?.createdAt);
+	const {mutate: updateProfile, isPending: updatingProfile} = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/user/update`, {
+					method: "POST",
+					headers:{
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({
+						coverImg,
+						profileImg
+					}),
+				})
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || "Something went wrong");
+				return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: () => {
+			//invalidate two queries to update profile and the sidebar
+			Promise.all([
+				queryClient.invalidateQueries(["userProfile"]),
+				queryClient.invalidateQueries(["authUser"]),
+			])
+		},
+		onError: () => {
+			toast.error("Failed to update profile");
+		}
+	})
 
+	const isMyProfile = authUser._id === user?._id;
+	const memberSince = formatMemberSinceDate(user?.createdAt);
+	const isFollowing = authUser?.following.includes(user?._id);
 	
 	useEffect(() => {
 		refetch()
@@ -76,7 +113,7 @@ const ProfilePage = () => {
 								</Link>
 								<div className='flex flex-col'>
 									<p className='font-bold text-lg'>{user?.fullName}</p>
-									<span className='text-sm text-slate-500'>{POSTS?.length} posts</span>
+									<span className='text-sm text-slate-500'>2 posts</span>
 								</div>
 							</div>
 							{/* COVER IMG */}
@@ -123,21 +160,23 @@ const ProfilePage = () => {
 								</div>
 							</div>
 							<div className='flex justify-end px-4 mt-5'>
-								{isMyProfile && <EditProfileModal />}
+								{isMyProfile && <EditProfileModal authUser={authUser} />}
 								{!isMyProfile && (
 									<button
 										className='btn btn-outline rounded-full btn-sm'
-										onClick={() => alert("Followed successfully")}
+										onClick={() => follow(user?._id)}
 									>
-										Follow
+										{isPending && "Loading..."}
+										{!isPending && isFollowing && "Unfollow"}
+										{!isPending && !isFollowing && "Follow"}
 									</button>
 								)}
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => alert("Profile updated successfully")}
+										onClick={() => updateProfile()}
 									>
-										Update
+										{updatingProfile ? "Updating..." : "Update"}
 									</button>
 								)}
 							</div>

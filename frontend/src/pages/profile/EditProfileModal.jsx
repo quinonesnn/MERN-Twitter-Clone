@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useQuery, useMutation, useQueryClient} from "@tanstack/react-query";
 
-const EditProfileModal = () => {
+const EditProfileModal = ({authUser}) => {
+	const queryClient = useQueryClient();
 	const [formData, setFormData] = useState({
 		fullName: "",
 		username: "",
@@ -11,9 +13,51 @@ const EditProfileModal = () => {
 		currentPassword: "",
 	});
 
+	const {mutate: updateProfile, isPending: updatingProfile} = useMutation({
+		mutationFn: async () => {
+			try {
+				const res = await fetch(`/api/user/update`, {
+					method: "POST",
+					headers:{
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify({formData}),
+				})
+				const data = await res.json();
+				if (!res.ok) throw new Error(data.error || "Something went wrong");
+				return data;
+			} catch (error) {
+				throw new Error(error);
+			}
+		},
+		onSuccess: () => {
+			Promise.all([
+				queryClient.invalidateQueries(["authUser"]),
+				queryClient.invalidateQueries(["userProfile"]),
+			])
+		},
+		onError: () => {
+			toast.error("Failed to update profile");
+		}
+	})
+
 	const handleInputChange = (e) => {
 		setFormData({ ...formData, [e.target.name]: e.target.value });
 	};
+
+	useEffect(() =>{
+		if (authUser) {
+			setFormData({
+				fullName: authUser.fullName,
+				username: authUser.username,
+				email: authUser.email,
+				bio: authUser.bio,
+				link: authUser.link,
+				newPassword: "",
+				currentPassword: "",
+			});
+		}
+	}, [authUser]);
 
 	return (
 		<>
@@ -30,7 +74,7 @@ const EditProfileModal = () => {
 						className='flex flex-col gap-4'
 						onSubmit={(e) => {
 							e.preventDefault();
-							alert("Profile updated successfully");
+							updateProfile();
 						}}
 					>
 						<div className='flex flex-wrap gap-2'>
@@ -94,7 +138,9 @@ const EditProfileModal = () => {
 							name='link'
 							onChange={handleInputChange}
 						/>
-						<button className='btn btn-primary rounded-full btn-sm text-white'>Update</button>
+						<button className='btn btn-primary rounded-full btn-sm text-white'>
+							{updatingProfile ? "Updating..." : "Update"}
+						</button>
 					</form>
 				</div>
 				<form method='dialog' className='modal-backdrop'>

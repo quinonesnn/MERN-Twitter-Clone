@@ -487,8 +487,21 @@ File to document the journey and steps it took to make this application:
             in Posts.jsx we have a switch case on getPostEndpoint
             add another for username that will be passed as a prop in ProfilePage.jsx
             add another for likes and remember that likes takes an id (defined in post.routes.ts)
+        get authUser from useQuery[authUser]
+        check if the user._id is the authUsers Id making this your profile
+        set our custom useFollow hook, add the follow function to the follow button
+        hanlde follow button and check if user is already followed
 
-    
+        update profile info
+            mutate updateProfile
+            POST fetch to endpoint
+            initialize queryClient
+            onSuccess invalidate both userProfile and authUser
+
+            we make EditProfileModal useEffect to have the already entered values in the form
+            give it the same update profile mutation 
+        
+        
 
     
 
