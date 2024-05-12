@@ -3,12 +3,12 @@
 ### Learning Outcomes:
 
 > Backend setup with Node.js and Express
-MongoDB database integration
-User authentication with JWT
-Frontend development with React
-Tailwind CSS and DaisyUI integration
-API integration with React Query
-Deployment considerations
+> MongoDB database integration
+> User authentication with JWT
+> Frontend development with React
+> Tailwind CSS and DaisyUI integration
+> API integration with React Query
+> Deployment considerations
 
 ___
 
