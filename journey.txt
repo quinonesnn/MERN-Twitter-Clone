@@ -510,7 +510,6 @@ File to document the journey and steps it took to make this application:
                 use the async function when updating coverImg and profileImg
 
 6. Deployment
-    Use render.com
 
     frontend is in localhost:3000 and backend in localhost:5000
     when we push to render they wont have node_modules, we need to install dependencies
@@ -541,6 +540,18 @@ File to document the journey and steps it took to make this application:
         npm run build
         npm run start
 
+    Use render.com
+        New+ Web Service
+        Build and deploy from Git Repo
+        connect the repo
+        change build/start command to the one that we specified
+            npm run build
+            npm run start
+        Add Enviroment Variables from .env
+            skip NODE_ENV
+        
+        deploy!
+        
 
     
 
