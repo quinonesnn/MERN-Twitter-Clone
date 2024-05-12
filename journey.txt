@@ -509,8 +509,37 @@ File to document the journey and steps it took to make this application:
 
                 use the async function when updating coverImg and profileImg
 
-6.
-        
+6. Deployment
+    Use render.com
+
+    frontend is in localhost:3000 and backend in localhost:5000
+    when we push to render they wont have node_modules, we need to install dependencies
+    in package.json
+        add a new script
+            "build" : "npm install && npm install --prefix frontend && npm run build --prefix frontend"
+            npm run build to test make sure you delete the created dist folder
+            this is what will happen when we deploy the application
+        edit scripts
+            "dev" : "NODE_ENV=development nodemon backend/server.js"
+            "start": "NODE_ENV=production node backend/server.js",
+
+    server.js
+        import path from 'path'
+
+        create __dirname = path.resolve()
+
+        if the we are in production, set the dist folder to be static assest
+        if(process.env.NODE_ENV == "production"){
+            app.use(express.static(path.join(__dirname, "/frontend/dist")));
+            
+            app.get("*", (req, res) => {
+                res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+            })
+        }
+    
+    in root terminal
+        npm run build
+        npm run start
 
 
     
