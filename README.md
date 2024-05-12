@@ -93,3 +93,27 @@ Integrated a notification system with basic display and deletion.
 - Used a platform like Render.com for deployment.
 Set up build and start commands in the deployment configuration.
 Added environment variables for sensitive information.
+
+### Setup .env file
+
+```js
+MONGO_URI=...
+PORT=...
+JWT_SECRET=...
+NODE_ENV=...
+CLOUDINARY_CLOUD_NAME=...
+CLOUDINARY_API_KEY=...
+CLOUDINARY_API_SECRET=...
+```
+
+### Build the app
+
+```shell
+npm run build
+```
+
+### Start the app
+
+```shell
+npm start
+```
