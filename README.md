@@ -2,13 +2,13 @@
 ## Full Stack (MERN) Twitter Clone
 ### Learning Outcomes:
 
-> Backend setup with Node.js and Express
-> MongoDB database integration
-> User authentication with JWT
-> Frontend development with React
-> Tailwind CSS and DaisyUI integration
-> API integration with React Query
-> Deployment considerations
+1. > Backend setup with Node.js and Express
+2. > MongoDB database integration
+3. > User authentication with JWT
+4. > Frontend development with React
+5. > Tailwind CSS and DaisyUI integration
+6. > API integration with React Query
+7. > Deployment considerations
 
 ___
 
