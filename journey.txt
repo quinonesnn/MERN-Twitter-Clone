@@ -509,6 +509,7 @@ File to document the journey and steps it took to make this application:
 
                 use the async function when updating coverImg and profileImg
 
+6.
         
 
 
